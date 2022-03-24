@@ -1,4 +1,4 @@
-const createSiteTabTemplate = () => {
+export const createSiteTabTemplate = () => {
   return '<section class="trip-main__trip-in  fo  trip-info">\
   <div class="trip-info__main">\
     <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>\
@@ -10,4 +10,3 @@ const createSiteTabTemplate = () => {
 </section>';
 }
 
-export {createSiteTabTemplate};
