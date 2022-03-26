@@ -1,7 +1,6 @@
-
 const renderTemplate = (container, template, place) => {
-    container.insertAdjacentHTML(place, template);
-}
+  container.insertAdjacentHTML(place, template);
+};
 
 import {createSiteTabTemplate} from './view/site-tab-view.js';
 import {createSiteFilterTemplate} from './view/site-filter-view.js';

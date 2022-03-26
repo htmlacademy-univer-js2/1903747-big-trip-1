@@ -8,7 +8,8 @@
     "eslint": "eslint src/",
     "test": "npm run eslint",
     "build": "webpack --mode development",
-    "start": "webpack serve --open --mode development"
+    "start": "webpack serve --open --mode development",
+    "lint": "eslint --fix --ext .js,.vue src"
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",
