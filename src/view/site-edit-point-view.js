@@ -1,8 +1,9 @@
-import dayjs from "dayjs"
+import dayjs from 'dayjs';
 export const createSiteEditPointTemplate = function (newPoint) {
-    const {destination, offers, point} = newPoint;
-    
-    return `<li class="trip-events__item">
+  const destination = newPoint.destination;
+  const point = newPoint.point;
+
+  return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
@@ -42,7 +43,7 @@ export const createSiteEditPointTemplate = function (newPoint) {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
 
@@ -68,7 +69,7 @@ export const createSiteEditPointTemplate = function (newPoint) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.town_name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.townName}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -78,10 +79,10 @@ export const createSiteEditPointTemplate = function (newPoint) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(point.date_from).format("DD/MM/YY HH:MM")}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(point.dateFrom).format('DD/MM/YY HH:MM')}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(point.date_to).format("DD/MM/YY HH:MM")}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(point.dateTo).format('DD/MM/YY HH:MM')}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -89,7 +90,7 @@ export const createSiteEditPointTemplate = function (newPoint) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.base_price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -157,4 +158,4 @@ export const createSiteEditPointTemplate = function (newPoint) {
       </section>
     </form>
   </li>`;
-}
+};
