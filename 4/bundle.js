@@ -10,7 +10,8 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "generatePoint": () => (/* binding */ generatePoint)
+/* harmony export */   "generatePoint": () => (/* binding */ generatePoint),
+/* harmony export */   "tripPoint": () => (/* binding */ tripPoint)
 /* harmony export */ });
 const tripTypeArray = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const townArray = ['New-York', 'Dallas', 'Moscow', 'Tokyo', 'Madrid', 'Belgrad', 'Crimea', 'Oakland', 'Manila', 'Warsaw'];
@@ -21,19 +22,21 @@ function optionObject(newOption, newPrice, newType) {
   this.type = newType;
 }
 
-const optionsArray = [new optionObject('Add breakfast', 50, "restaurant"), new optionObject('Add luggage', 50, "flight"), new optionObject('Rent a car', 80, "drive"), new optionObject('Add soft drinks', 10, "bus"), new optionObject('Book tickets', 40, "sightseeing"), new optionObject('Lunch in city', 30, "sightseeing"), new optionObject('Order Uber', 20, "taxi"), new optionObject('Switch to comfort', 30, "flight"), new optionObject('Switch to luxe', 100, "ship"), new optionObject('Premium waiting area', 20, "check-in")];
+const optionsArray = [new optionObject('Add breakfast', 50, 'restaurant'), new optionObject('Add luggage', 50, 'flight'), new optionObject('Rent a car', 80, 'drive'), new optionObject('Add soft drinks', 10, 'bus'), new optionObject('Book tickets', 40, 'sightseeing'), new optionObject('Lunch in city', 30, 'sightseeing'), new optionObject('Order Uber', 20, 'taxi'), new optionObject('Switch to comfort', 30, 'flight'), new optionObject('Switch to luxe', 100, 'ship'), new optionObject('Premium waiting area', 20, 'check-in')];
 const descriptionArray = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget', 'Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra', 'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum', 'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui', 'Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus'];
 
 const getImageArray = () => {
-  let arr = [];
+  const arr = [];
 
-  for (let i = 0; i < getRandomInt(0, 3); i++) arr.push('http://picsum.photos/248/152?' + getRandomInt(0, 20));
+  for (let i = 0; i < getRandomInt(0, 3); i++) {
+    arr.push(`http://picsum.photos/248/152?${getRandomInt(0, 20)}`);
+  }
 
   return arr;
 };
 
 const getOptionArray = () => {
-  let arr = [];
+  const arr = [];
 
   for (let i = 0; i < getRandomInt(0, 5); i++) {
     arr.push(optionsArray[getRandomInt(0, optionsArray.length - 1)]);
@@ -46,36 +49,46 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const generateDay = month => {
-  return month + " " + getRandomInt(1, 30);
-};
-
 const generateTime = () => {
   const month = getRandomInt(0, 11);
   const day = getRandomInt(0, 31);
   const hours = getRandomInt(0, 19);
   const minutes = getRandomInt(0, 10);
-  var startTime = new Date(2022, month, day, hours, minutes);
-  var endTime = new Date(2022, month, day, hours + getRandomInt(1, 4), minutes + getRandomInt(0, 45));
+  const startTime = new Date(2022, month, day, hours, minutes);
+  const endTime = new Date(2022, month, day, hours + getRandomInt(1, 4), minutes + getRandomInt(0, 45));
   return [startTime, endTime];
 };
 
 const generatePoint = () => ({
-  destination: {
-    description: descriptionArray[getRandomInt(0, 4)],
-    town_name: townArray[getRandomInt(0, townArray.length)],
-    pictures: getImageArray()
-  },
+  description: descriptionArray[getRandomInt(0, 4)],
+  townName: townArray[getRandomInt(0, townArray.length)],
+  pictures: getImageArray(),
   offers: getOptionArray(),
-  point: {
-    base_price: getRandomInt(20, 1000),
-    date_from: generateTime()[0],
-    date_to: generateTime()[1],
-    trip_duration: "some",
-    is_favorite: Boolean(getRandomInt(0, 1)),
-    type: tripTypeArray[getRandomInt(0, tripTypeArray.length)]
-  }
+  basePrice: getRandomInt(20, 1000),
+  date: generateTime(),
+  tripDuration: 'some',
+  isFavorite: Boolean(getRandomInt(0, 1)),
+  type: tripTypeArray[getRandomInt(0, tripTypeArray.length)]
 });
+class tripPoint {
+  constructor(pointData) {
+    this.destination = {
+      description: pointData.description,
+      townName: pointData.townName,
+      pictures: pointData.pictures
+    };
+    this.offers = pointData.offers;
+    this.point = {
+      basePrice: pointData.basePrice,
+      dateFrom: pointData.date[0],
+      dateTo: pointData.date[1],
+      tripDuration: pointData.tripDuration,
+      isFavorite: pointData.isFavorite,
+      type: pointData.type
+    };
+  }
+
+}
 
 /***/ }),
 
@@ -94,11 +107,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
 
 const createSiteEditPointTemplate = function (newPoint) {
-  const {
-    destination,
-    offers,
-    point
-  } = newPoint;
+  const destination = newPoint.destination;
+  const point = newPoint.point;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -139,7 +149,7 @@ const createSiteEditPointTemplate = function (newPoint) {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
 
@@ -165,7 +175,7 @@ const createSiteEditPointTemplate = function (newPoint) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.town_name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.townName}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -175,10 +185,10 @@ const createSiteEditPointTemplate = function (newPoint) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_from).format("DD/MM/YY HH:MM")}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.dateFrom).format('DD/MM/YY HH:MM')}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_to).format("DD/MM/YY HH:MM")}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.dateTo).format('DD/MM/YY HH:MM')}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -186,7 +196,7 @@ const createSiteEditPointTemplate = function (newPoint) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.base_price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -312,40 +322,45 @@ const createSiteFilterTemplate = () => '<div class="trip-main__trip-controls  tr
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createOffersTemplate": () => (/* binding */ createOffersTemplate),
 /* harmony export */   "createSiteListContentTemplate": () => (/* binding */ createSiteListContentTemplate)
 /* harmony export */ });
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
 
-const createSiteListContentTemplate = function (newPoint) {
-  const {
-    destination,
-    offers,
-    point
-  } = newPoint;
-  return `<ul class="trip-events__list">
+class createSiteListContentTemplate {
+  constructor(newPoint) {
+    this.type = newPoint.point.type;
+    this.townName = newPoint.destination.townName;
+    this.basePrice = newPoint.point.basePrice;
+    this.offersArray = newPoint.offers;
+    this.dateFrom = newPoint.point.dateFrom;
+    this.dateTo = newPoint.point.dateTo;
+    this.duration = newPoint.point.tripDuration;
+  }
+
+  get getContentList() {
+    return `<ul class="trip-events__list">
             <li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18">${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_from).format("MMM, DD")}</time> 
+                <time class="event__date" datetime="2019-03-18">${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(this.dateFrom).format('MMM, DD')}</time> 
                 <div class="event__type">
-                  <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon"/>
+                  <img class="event__type-icon" width="42" height="42" src="img/icons/${this.type}.png" alt="Event type icon"/>
                 </div>
-                <h3 class="event__title">${point.type} ${destination.town_name}</h3>
+                <h3 class="event__title">${this.type} ${this.townName}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="2019-03-18T12:25">${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_from).format("HH")}:${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_from).format("MM")}</time>
+                    <time class="event__start-time" datetime="2019-03-18T12:25">${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(this.dateFrom).format('HH')}:${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(this.dateFrom).format('MM')}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="2019-03-18T13:35">${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_to).format("HH")}:${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(point.date_to).format("MM")}</time>
+                    <time class="event__end-time" datetime="2019-03-18T13:35">${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(this.dateTo).format('HH')}:${dayjs__WEBPACK_IMPORTED_MODULE_0___default()(this.dateTo).format('MM')}</time>
                   </p>
-                  <p class="event__duration">${point.trip_duration}</p>
+                  <p class="event__duration">${this.duration}</p>
                 </div>
                 <p class="event__price">
-                  &euro;&nbsp;<span class="event__price-value">${point.base_price}</span>
+                  &euro;&nbsp;<span class="event__price-value">${this.basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  ${createOffersTemplate(offers)}
+                  ${this.createOffersTemplate(this.offersArray)}
                 </ul>
                 <button class="event__favorite-btn event__favorite-btn--active" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -359,20 +374,23 @@ const createSiteListContentTemplate = function (newPoint) {
               </div>
             </li>
           </ul>`;
-};
-const createOffersTemplate = function (optionsArray) {
-  let offersElement = "";
-
-  for (let i = 0; i < optionsArray.length; i++) {
-    offersElement += `<li class="event__offer">
-      <span class="event__offer-title">${optionsArray[i].option}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${optionsArray[i].price}</span>
-    </li>`;
   }
 
-  return offersElement;
-};
+  createOffersTemplate() {
+    let offersElement = '';
+
+    for (let i = 0; i < this.offersArray.length; i++) {
+      offersElement += `<li class="event__offer">
+        <span class="event__offer-title">${this.offersArray[i].option}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${this.offersArray[i].price}</span>
+      </li>`;
+    }
+
+    return offersElement;
+  }
+
+}
 
 /***/ }),
 
@@ -385,10 +403,11 @@ const createOffersTemplate = function (optionsArray) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createSiteListSortTemplate": () => (/* binding */ createSiteListSortTemplate)
+/* harmony export */   "listSortTemplate": () => (/* binding */ listSortTemplate)
 /* harmony export */ });
-const createSiteListSortTemplate = function () {
-  return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+class listSortTemplate {
+  get getSortDom() {
+    return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <div class="trip-sort__item  trip-sort__item--day">
       <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day">
       <label class="trip-sort__btn" for="sort-day">Day</label>
@@ -414,188 +433,9 @@ const createSiteListSortTemplate = function () {
       <label class="trip-sort__btn" for="sort-offer">Offers</label>
     </div>
   </form>`;
-};
+  }
 
-/***/ }),
-
-/***/ "./src/view/site-new-point-view.js":
-/*!*****************************************!*\
-  !*** ./src/view/site-new-point-view.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createSiteNewPointTemplate": () => (/* binding */ createSiteNewPointTemplate)
-/* harmony export */ });
-const createSiteNewPointTemplate = function (newPoint) {
-  const {
-    destination,
-    offers,
-    point
-  } = newPoint;
-  return `<form class="event event--edit" action="#" method="post">
-    <header class="event__header">
-      <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
-          <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
-        </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
-        <div class="event__type-list">
-          <fieldset class="event__type-group">
-            <legend class="visually-hidden">Event type</legend>
-
-            <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-              <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-              <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-              <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-              <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-              <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-              <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-              <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-              <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-            </div>
-          </fieldset>
-        </div>
-      </div>
-
-      <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
-          Flight
-        </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Geneva" list="destination-list-1">
-        <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
-        </datalist>
-      </div>
-
-      <div class="event__field-group  event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
-        &mdash;
-        <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
-      </div>
-
-      <div class="event__field-group  event__field-group--price">
-        <label class="event__label" for="event-price-1">
-          <span class="visually-hidden">Price</span>
-          &euro;
-        </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
-      </div>
-
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
-    </header>
-    <section class="event__details">
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-        <div class="event__available-offers">
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-            <label class="event__offer-label" for="event-offer-luggage-1">
-              <span class="event__offer-title">Add luggage</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">30</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-            <label class="event__offer-label" for="event-offer-comfort-1">
-              <span class="event__offer-title">Switch to comfort class</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">100</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-            <label class="event__offer-label" for="event-offer-meal-1">
-              <span class="event__offer-title">Add meal</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">15</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-            <label class="event__offer-label" for="event-offer-seats-1">
-              <span class="event__offer-title">Choose seats</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">5</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-            <label class="event__offer-label" for="event-offer-train-1">
-              <span class="event__offer-title">Travel by train</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">40</span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
-
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
-          </div>
-        </div>
-      </section>
-    </section>
-  </form>`;
-};
+}
 
 /***/ }),
 
@@ -712,9 +552,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _view_site_filter_view_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./view/site-filter-view.js */ "./src/view/site-filter-view.js");
 /* harmony import */ var _view_site_list_sort_view_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./view/site-list-sort-view.js */ "./src/view/site-list-sort-view.js");
 /* harmony import */ var _view_site_list_content_view_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view/site-list-content-view.js */ "./src/view/site-list-content-view.js");
-/* harmony import */ var _view_site_new_point_view_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./view/site-new-point-view.js */ "./src/view/site-new-point-view.js");
-/* harmony import */ var _view_site_edit_point_view_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./view/site-edit-point-view.js */ "./src/view/site-edit-point-view.js");
-/* harmony import */ var _mock_mock_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./mock/mock.js */ "./src/mock/mock.js");
+/* harmony import */ var _view_site_edit_point_view_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./view/site-edit-point-view.js */ "./src/view/site-edit-point-view.js");
+/* harmony import */ var _mock_mock_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./mock/mock.js */ "./src/mock/mock.js");
 const renderTemplate = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
@@ -722,27 +561,28 @@ const renderTemplate = (container, template, place) => {
 
 
 
-
+const sortElement = new _view_site_list_sort_view_js__WEBPACK_IMPORTED_MODULE_2__.listSortTemplate().getSortDom;
+ //import {createSiteNewPointTemplate} from './view/site-new-point-view.js';
 
 
 const tripTab = document.querySelector('.trip-main');
 const tripFilters = document.querySelector('.trip-controls__filters');
 const tripList = document.querySelector('.trip-events');
 
-let mockArray = [];
+const mockArray = [];
 
 for (let i = 0; i < 15; i++) {
-  mockArray.push((0,_mock_mock_js__WEBPACK_IMPORTED_MODULE_6__.generatePoint)());
+  mockArray.push(new _mock_mock_js__WEBPACK_IMPORTED_MODULE_5__.tripPoint((0,_mock_mock_js__WEBPACK_IMPORTED_MODULE_5__.generatePoint)()));
 }
 
-console.log(mockArray);
 renderTemplate(tripTab, (0,_view_site_tab_view_js__WEBPACK_IMPORTED_MODULE_0__.createSiteTabTemplate)(), 'afterbegin');
 renderTemplate(tripFilters, (0,_view_site_filter_view_js__WEBPACK_IMPORTED_MODULE_1__.createSiteFilterTemplate)(), 'beforeend');
-renderTemplate(tripList, (0,_view_site_edit_point_view_js__WEBPACK_IMPORTED_MODULE_5__.createSiteEditPointTemplate)(mockArray[0]), 'afterbegin');
-renderTemplate(tripList, (0,_view_site_list_sort_view_js__WEBPACK_IMPORTED_MODULE_2__.createSiteListSortTemplate)(), 'afterbegin'); //renderTemplate(tripList, createSiteNewPointTemplate(generatePoint()), 'afterbegin');
+renderTemplate(tripList, (0,_view_site_edit_point_view_js__WEBPACK_IMPORTED_MODULE_4__.createSiteEditPointTemplate)(mockArray[0]), 'afterbegin');
+renderTemplate(tripList, sortElement, 'afterbegin'); //renderTemplate(tripList, createSiteNewPointTemplate(generatePoint()), 'afterbegin');
 
 for (let i = 0; i < mockArray.length; i++) {
-  renderTemplate(tripList, (0,_view_site_list_content_view_js__WEBPACK_IMPORTED_MODULE_3__.createSiteListContentTemplate)(mockArray[i]), 'beforeend');
+  const listContent = new _view_site_list_content_view_js__WEBPACK_IMPORTED_MODULE_3__.createSiteListContentTemplate(mockArray[i]).getContentList;
+  renderTemplate(tripList, listContent, 'beforeend');
 }
 })();
 
