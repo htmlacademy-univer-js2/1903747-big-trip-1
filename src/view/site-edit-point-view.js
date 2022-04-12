@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
-export const createSiteEditPointTemplate = function (newPoint) {
+import {createElement} from '../render.js';
+
+const createSiteEditPointTemplate = (newPoint) => {
   const destination = newPoint.destination;
   const point = newPoint.point;
 
@@ -159,3 +161,27 @@ export const createSiteEditPointTemplate = function (newPoint) {
     </form>
   </li>`;
 };
+
+export class SiteEditPointView {
+  #element = null;
+  #newPoint = null;
+
+  constructor (newPoint) {
+    this.#newPoint = newPoint;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createSiteEditPointTemplate(this.#newPoint);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

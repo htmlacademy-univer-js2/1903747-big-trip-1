@@ -49,11 +49,12 @@ function getRandomInt(min, max) {
 const generateTime = () => {
   const month = getRandomInt(0, 11);
   const day = getRandomInt(0, 31);
-  const hours = getRandomInt(0, 19);
+  const hours = getRandomInt(0, 17);
   const minutes = getRandomInt(0, 10);
   const startTime = new Date(2022, month, day, hours, minutes);
-  const endTime = new Date(2022, month, day, hours + getRandomInt(1, 4), minutes + getRandomInt(0, 45));
-  return [startTime, endTime];
+  const endTime = new Date(2022, month, day, hours + getRandomInt(1, 7), minutes + getRandomInt(10, 45));
+  const duration = endTime - startTime;
+  return [startTime, endTime, duration];
 };
 
 export const generatePoint = () => (
@@ -63,8 +64,7 @@ export const generatePoint = () => (
     pictures: getImageArray(),
     offers: getOptionArray(),
     basePrice: getRandomInt(20, 1000),
-    date: generateTime(),
-    tripDuration: 'some',
+    dateAndDuration: generateTime(),
     isFavorite: Boolean(getRandomInt(0, 1)),
     type: tripTypeArray[getRandomInt(0, tripTypeArray.length)]
   }
@@ -80,9 +80,9 @@ export class tripPoint {
     this.offers = pointData.offers;
     this.point = {
       basePrice: pointData.basePrice,
-      dateFrom: pointData.date[0],
-      dateTo: pointData.date[1],
-      tripDuration: pointData.tripDuration,
+      dateFrom: pointData.dateAndDuration[0],
+      dateTo: pointData.dateAndDuration[1],
+      tripDuration: pointData.dateAndDuration[2],
       isFavorite: pointData.isFavorite,
       type: pointData.type
     };

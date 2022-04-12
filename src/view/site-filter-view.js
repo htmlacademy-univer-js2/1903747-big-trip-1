@@ -1,4 +1,6 @@
-export const createSiteFilterTemplate = () => (
+import {createElement} from '../render.js';
+
+const createSiteFilterTemplate = () => (
   '<div class="trip-main__trip-controls  trip-controls">\
             <div class="trip-controls__navigation">\
               <h2 class="visually-hidden">Switch trip view</h2>\
@@ -31,3 +33,27 @@ export const createSiteFilterTemplate = () => (
             </div>\
     </div>'
 );
+
+export class SiteFilterView {
+  #element = null;
+  #newPoint = null;
+
+  constructor (newPoint) {
+    this.#newPoint = newPoint;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createSiteFilterTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
