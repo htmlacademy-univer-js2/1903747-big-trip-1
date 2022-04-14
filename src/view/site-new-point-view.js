@@ -1,4 +1,6 @@
-export const createSiteNewPointTemplate = function () {
+import {createElement} from '../render.js';
+
+const createSiteNewPointTemplate = function () {
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -161,3 +163,27 @@ export const createSiteNewPointTemplate = function () {
     </section>
   </form>`;
 };
+
+export class SiteNewPointView {
+  #element = null;
+  #newPoint = null;
+
+  constructor (newPoint) {
+    this.#newPoint = newPoint;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createSiteNewPointTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

@@ -1,37 +1,76 @@
-const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
+import {render} from './render.js';
+import {RenderPosition} from './render.js';
+import {SiteTabView} from './view/site-tab-view.js';
+import {SiteFilterView} from './view/site-filter-view.js';
+import {SiteSortView} from './view/site-list-sort-view.js';
+import {SiteNoPointView} from './view/site-no-point-view.js';
+import {tripPoint, generatePoint} from './mock/mock.js';
+import {SitePointView} from './view/site-list-content-view.js';
 
-import {createSiteTabTemplate} from './view/site-tab-view.js';
-import {createSiteFilterTemplate} from './view/site-filter-view.js';
-import {listSortTemplate} from './view/site-list-sort-view.js';
-const sortElement = new listSortTemplate().getSortDom;
-import {createSiteListContentTemplate} from './view/site-list-content-view.js';
+// import {SiteNewPointTemplate} from './view/site-new-point-view.js';
+import {SiteEditPointView} from './view/site-edit-point-view.js';
 
-//import {createSiteNewPointTemplate} from './view/site-new-point-view.js';
-import {createSiteEditPointTemplate} from './view/site-edit-point-view.js';
+const pointsCount = 10;
 
-const tripTab = document.querySelector('.trip-main');
+const mainComponent = document.querySelector('.trip-main');
 const tripFilters = document.querySelector('.trip-controls__filters');
 const tripList = document.querySelector('.trip-events');
-
-
-import {tripPoint, generatePoint} from './mock/mock.js';
-
-const mockArray = [];
-for (let i = 0; i < 15; i++) {
-  mockArray.push(new tripPoint(generatePoint()));
+const points = [];
+for (let i = 0; i < pointsCount; i++) {
+  points.push(new tripPoint(generatePoint()));
 }
 
-renderTemplate(tripTab, createSiteTabTemplate(), 'afterbegin');
-renderTemplate(tripFilters, createSiteFilterTemplate(), 'beforeend');
-renderTemplate(tripList, createSiteEditPointTemplate(mockArray[0]), 'afterbegin');
-renderTemplate(tripList, sortElement, 'afterbegin');
+const renderPoint = (pointListElement, point) => {
+  const pointComponent = new SitePointView(point);
+  const pointEditComponent = new SiteEditPointView(point);
 
-//renderTemplate(tripList, createSiteNewPointTemplate(generatePoint()), 'afterbegin');
+  const replacePointToForm = () => {
+    pointListElement.replaceChild(pointEditComponent.element, pointComponent.element);
+  };
 
+  const replaceFormToPoint = () => {
+    pointListElement.replaceChild(pointComponent.element, pointEditComponent.element);
+  };
 
-for (let i = 0; i < mockArray.length; i++) {
-  const listContent = new createSiteListContentTemplate(mockArray[i]).getContentList;
-  renderTemplate(tripList, listContent, 'beforeend');
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      event.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.element.querySelector('form').addEventListener('submit', () => {
+    event.preventDefault();
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToPoint();
+  });
+
+  render(pointListElement, pointComponent.element, RenderPosition.BEFOREEND);
+};
+
+render(mainComponent, new SiteTabView().element, RenderPosition.AFTERBEGIN);
+render(tripFilters, new SiteFilterView().element, RenderPosition.BEFOREEND);
+
+if (points.every((point) => point.isArchive)) {
+  render(tripList, new SiteNoPointView().element, RenderPosition.BEFOREEND);
 }
+else {
+  render(tripList, new SiteSortView().element, RenderPosition.AFTERBEGIN);
+  //renderTemplate(tripList, createSiteNewPointTemplate(generatePoint()), 'afterbegin');
+
+  for (let i = 0; i < pointsCount; i++) {
+    renderPoint(tripList, points[i]);
+  }
+}
+
+
