@@ -8,6 +8,7 @@ import {tripPoint, generatePoint} from './mock/mock.js';
 import {SitePointView} from './view/site-list-content-view.js';
 
 // import {SiteNewPointTemplate} from './view/site-new-point-view.js';
+// did second task
 import {SiteEditPointView} from './view/site-edit-point-view.js';
 
 const pointsCount = 10;
