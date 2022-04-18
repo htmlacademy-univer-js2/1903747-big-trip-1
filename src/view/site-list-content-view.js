@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createOffersTemplate = (offers) => {
   let offersElement = '';
@@ -53,27 +53,26 @@ const createSiteListContentTemplate = (newPoint) => {
           </ul>`;
 };
 
-export class SitePointView {
-  #element = null;
+export class SitePointView extends AbstractView {
   #newPoint = null;
 
   constructor (newPoint) {
+    super();
     this.#newPoint = newPoint;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
     return createSiteListContentTemplate(this.#newPoint);
   }
 
-  removeElement() {
-    this.#element = null;
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  }
+
+  #editClickHandler = (event) => {
+    event.preventDefault();
+    this._callback.editClick();
   }
 }
 
