@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createSiteEditPointTemplate = (newPoint) => {
   const destination = newPoint.destination;
@@ -162,26 +162,25 @@ const createSiteEditPointTemplate = (newPoint) => {
   </li>`;
 };
 
-export class SiteEditPointView {
-  #element = null;
+export class SiteEditPointView extends AbstractView{
   #newPoint = null;
 
   constructor (newPoint) {
+    super();
     this.#newPoint = newPoint;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
     return createSiteEditPointTemplate(this.#newPoint);
   }
 
-  removeElement() {
-    this.#element = null;
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (event) => {
+    event.preventDefault();
+    this._callback.formSubmit();
   }
 }

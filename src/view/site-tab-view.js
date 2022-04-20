@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createSiteTabTemplate = () => '<section class="trip-main__trip-in  fo  trip-info">\
   <div class="trip-info__main">\
@@ -10,21 +10,8 @@ const createSiteTabTemplate = () => '<section class="trip-main__trip-in  fo  tri
   </p>\
 </section>';
 
-export class SiteTabView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
+export class SiteTabView extends AbstractView {
   get template() {
     return createSiteTabTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

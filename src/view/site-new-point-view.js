@@ -1,7 +1,6 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createSiteNewPointTemplate = function () {
-
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -164,26 +163,8 @@ const createSiteNewPointTemplate = function () {
   </form>`;
 };
 
-export class SiteNewPointView {
-  #element = null;
-  #newPoint = null;
-
-  constructor (newPoint) {
-    this.#newPoint = newPoint;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
+export class SiteNewPointView extends AbstractView {
   get template() {
     return createSiteNewPointTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
