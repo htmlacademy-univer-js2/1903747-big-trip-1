@@ -1,3 +1,5 @@
+import {nanoid} from 'nanoid';
+
 const tripTypeArray = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 const townArray = ['New-York', 'Dallas', 'Moscow', 'Tokyo', 'Madrid', 'Belgrad', 'Crimea', 'Oakland', 'Manila', 'Warsaw'];
 
@@ -57,34 +59,23 @@ const generateTime = () => {
   return [startTime, endTime, duration];
 };
 
-export const generatePoint = () => (
-  {
-    description: descriptionArray[getRandomInt(0, 4)],
-    townName: townArray[getRandomInt(0, townArray.length)],
-    pictures: getImageArray(),
-    offers: getOptionArray(),
-    basePrice: getRandomInt(20, 1000),
-    dateAndDuration: generateTime(),
-    isFavorite: Boolean(getRandomInt(0, 1)),
-    type: tripTypeArray[getRandomInt(0, tripTypeArray.length)]
-  }
-);
-
-export class tripPoint {
-  constructor (pointData) {
-    this.destination = {
-      description: pointData.description,
-      townName: pointData.townName,
-      pictures: pointData.pictures
-    };
-    this.offers = pointData.offers;
-    this.point = {
-      basePrice: pointData.basePrice,
-      dateFrom: pointData.dateAndDuration[0],
-      dateTo: pointData.dateAndDuration[1],
-      tripDuration: pointData.dateAndDuration[2],
-      isFavorite: pointData.isFavorite,
-      type: pointData.type
-    };
-  }
-}
+export const generatePoint = () => {
+  const dateAndDuration = generateTime();
+  return {
+    destination : {
+      description: descriptionArray[getRandomInt(0, 4)],
+      townName: townArray[getRandomInt(0, townArray.length)],
+      pictures: getImageArray()
+    },
+    offers : getOptionArray(),
+    point : {
+      basePrice: getRandomInt(20, 1000),
+      dateFrom: dateAndDuration[0],
+      dateTo: dateAndDuration[1],
+      tripDuration: dateAndDuration[2],
+      isFavorite: Math.random() >= 0.7,
+      type: tripTypeArray[getRandomInt(0, tripTypeArray.length)]
+    },
+    id: nanoid()
+  };
+};

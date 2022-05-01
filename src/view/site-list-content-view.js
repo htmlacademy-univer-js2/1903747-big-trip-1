@@ -14,10 +14,15 @@ const createOffersTemplate = (offers) => {
   return offersElement;
 };
 
+const favoriteCheck = (isFavorite) => {
+  let favoriteActiveClass = '';
+  if (isFavorite) {favoriteActiveClass = 'event__favorite-btn--active';}
+  return favoriteActiveClass;
+};
+
 const createSiteListContentTemplate = (newPoint) => {
   const {destination, offers, point} = newPoint;
-  return `<ul class="trip-events__list">
-            <li class="trip-events__item">
+  return `<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="2019-03-18">${dayjs(point.dateFrom).format('MMM, DD')}</time> 
                 <div class="event__type">
@@ -39,7 +44,7 @@ const createSiteListContentTemplate = (newPoint) => {
                 <ul class="event__selected-offers">
                   ${createOffersTemplate(offers)}
                 </ul>
-                <button class="event__favorite-btn event__favorite-btn--active" type="button">
+                <button class="event__favorite-btn ${favoriteCheck(point.isFavorite)}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>\
@@ -49,8 +54,7 @@ const createSiteListContentTemplate = (newPoint) => {
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
-            </li>
-          </ul>`;
+            </li>`;
 };
 
 export class SitePointView extends AbstractView {
@@ -73,6 +77,16 @@ export class SitePointView extends AbstractView {
   #editClickHandler = (event) => {
     event.preventDefault();
     this._callback.editClick();
+  }
+
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
+  }
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }
 
