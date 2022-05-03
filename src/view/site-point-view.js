@@ -31,11 +31,11 @@ const createSiteListContentTemplate = (newPoint) => {
                 <h3 class="event__title">${point.type} ${destination.townName}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="2019-03-18T12:25">${dayjs(point.dateFrom).format('HH')}:${dayjs(point.dateFrom).format('MM')}</time>
+                    <time class="event__start-time" datetime="2019-03-18T12:25">${dayjs(point.dateFrom).format('HH')}:${dayjs(point.dateFrom).format('mm')}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="2019-03-18T13:35">${dayjs(point.dateTo).format('HH')}:${dayjs(point.dateTo).format('MM')}</time>
+                    <time class="event__end-time" datetime="2019-03-18T13:35">${dayjs(point.dateTo).format('HH')}:${dayjs(point.dateTo).format('mm')}</time>
                   </p>
-                  <p class="event__duration">${dayjs(point.tripDuration).format('H')}H ${dayjs(point.tripDuration).format('MM')}M</p>
+                  <p class="event__duration">${dayjs(point.tripDuration).format('HH')}H ${dayjs(point.tripDuration).format('mm')}M</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>

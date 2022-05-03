@@ -55,8 +55,39 @@ const generateTime = () => {
   const minutes = getRandomInt(0, 10);
   const startTime = new Date(2022, month, day, hours, minutes);
   const endTime = new Date(2022, month, day, hours + getRandomInt(1, 7), minutes + getRandomInt(10, 45));
-  const duration = endTime - startTime;
+  //console.log(startTime, endTime);
+  const duration = new Date(endTime - startTime - 18000000);
   return [startTime, endTime, duration];
+};
+
+const getWeight = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+export const sortPointTime = (pointA, pointB) => {
+  const durationA = pointA.point.tripDuration;
+  const durationB = pointB.point.tripDuration;
+
+  const weight = getWeight(durationA, durationB);
+  return weight ?? durationB - durationA;
+};
+
+export const sortPointPrice = (pointA, pointB) => {
+  const weight = getWeight(pointA.point.basePrice, pointB.point.basePrice);
+
+  return weight ?? pointB.point.basePrice - pointA.point.basePrice;
 };
 
 export const generatePoint = () => {
@@ -69,7 +100,7 @@ export const generatePoint = () => {
     },
     offers : getOptionArray(),
     point : {
-      basePrice: getRandomInt(20, 1000),
+      basePrice: getRandomInt(20, 2000),
       dateFrom: dateAndDuration[0],
       dateTo: dateAndDuration[1],
       tripDuration: dateAndDuration[2],
