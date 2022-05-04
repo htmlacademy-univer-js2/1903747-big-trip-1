@@ -1,4 +1,4 @@
-import {SitePointView} from '../view/site-list-content-view.js';
+import {SitePointView} from '../view/site-point-view.js';
 import {SiteEditPointView} from '../view/site-edit-point-view.js';
 import {render, RenderPosition, replace, remove} from '../render.js';
 
