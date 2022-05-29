@@ -1,25 +1,52 @@
 import {nanoid} from 'nanoid';
 
-const tripTypeArray = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
-const townArray = ['New-York', 'Dallas', 'Moscow', 'Tokyo', 'Madrid', 'Belgrad', 'Crimea', 'Oakland', 'Manila', 'Warsaw'];
+export const eventTypes = [
+  {name: 'taxi', iconURL: 'img/icons/taxi.png', action: 'to'},
+  {name: 'bus', iconURL: 'img/icons/bus.png', action: 'to'},
+  {name: 'train', iconURL: 'img/icons/train.png', action: 'to'},
+  {name: 'ship', iconURL: 'img/icons/ship.png', action: 'to'},
+  {name: 'transport', iconURL: 'img/icons/transport.png', action: 'to'},
+  {name: 'drive', iconURL: 'img/icons/drive.png', action: 'to'},
+  {name: 'flight', iconURL: 'img/icons/flight.png', action: 'to'},
+  {name: 'check-in', iconURL: 'img/icons/check-in.png', action: 'in'},
+  {name: 'sightseeing', iconURL: 'img/icons/sightseeing.png', action: 'in'},
+  {name: 'restaurant', iconURL: 'img/icons/restaurant.png', action: 'in'},
+];
 
-function optionObject(newOption, newPrice, newType) {
-  this.option = newOption;
-  this.price = newPrice;
-  this.type = newType;
+export const townArray = ['New-York', 'Dallas', 'Moscow', 'Tokyo', 'Madrid', 'Belgrad', 'Crimea', 'Oakland', 'Manila', 'Warsaw'];
+
+class optionObject {
+  constructor(newOption, newPrice, newType) {
+    this.tripOffer = {
+      type : newType,
+      option : newOption,
+      price : newPrice
+    };
+  }
+
+  get type() {
+    return this.tripOffer.type;
+  }
+
+  get tripOfer() {
+    return this.tripOffer;
+  }
 }
 
-const optionsArray = [
-  new optionObject('Add breakfast', 50, 'restaurant'),
-  new optionObject('Add luggage', 50, 'flight'),
-  new optionObject('Rent a car', 80, 'drive'),
-  new optionObject('Add soft drinks', 10, 'bus'),
-  new optionObject('Book tickets', 40, 'sightseeing'),
-  new optionObject('Lunch in city', 30, 'sightseeing'),
-  new optionObject('Order Uber', 20, 'taxi'),
-  new optionObject('Switch to comfort', 30, 'flight'),
-  new optionObject('Switch to luxe', 100, 'ship'),
-  new optionObject('Premium waiting area', 20, 'check-in')
+export const allOffers = [
+  new optionObject('Add breakfast', 50, 'restaurant').tripOffer,
+  new optionObject('Add alchol', 50, 'restaurant').tripOffer,
+  new optionObject('Add luggage', 50, 'flight').tripOffer,
+  new optionObject('Rent a car', 80, 'drive').tripOffer,
+  new optionObject('Add soft drinks', 10, 'bus').tripOffer,
+  new optionObject('Book tickets', 40, 'sightseeing').tripOffer,
+  new optionObject('Lunch in city', 30, 'sightseeing').tripOffer,
+  new optionObject('Order Uber', 20, 'taxi').tripOffer,
+  new optionObject('Add dinner', 20, 'train').tripOffer,
+  new optionObject('Switch to comfort', 30, 'flight').tripOffer,
+  new optionObject('Switch to luxe', 100, 'ship').tripOffer,
+  new optionObject('Premium waiting area', 20, 'check-in').tripOffer,
+  new optionObject('Switch to luxe', 50, 'transport').tripOffer,
 ];
 
 const descriptionArray = [
@@ -36,11 +63,9 @@ const getImageArray = () => {
   return arr;
 };
 
-const getOptionArray = () => {
+const getOptionArray = (typeOfTrip) => {
   const arr = [];
-  for (let i = 0; i < getRandomInt(0, 5); i++) {
-    arr.push(optionsArray[getRandomInt(0, optionsArray.length - 1)]);
-  }
+  allOffers.forEach((offer) => offer.type === typeOfTrip ? arr.push(offer) : null);
   return arr;
 };
 
@@ -92,21 +117,18 @@ export const sortPointPrice = (pointA, pointB) => {
 
 export const generatePoint = () => {
   const dateAndDuration = generateTime();
+  const newType = eventTypes[getRandomInt(0, eventTypes.length - 1)];
   return {
-    destination : {
-      description: descriptionArray[getRandomInt(0, 4)],
-      townName: townArray[getRandomInt(0, townArray.length)],
-      pictures: getImageArray()
-    },
-    offers : getOptionArray(),
-    point : {
-      basePrice: getRandomInt(20, 2000),
-      dateFrom: dateAndDuration[0],
-      dateTo: dateAndDuration[1],
-      tripDuration: dateAndDuration[2],
-      isFavorite: Math.random() >= 0.7,
-      type: tripTypeArray[getRandomInt(0, tripTypeArray.length)]
-    },
+    description: descriptionArray[getRandomInt(0, 4)],
+    townName: townArray[getRandomInt(0, townArray.length)],
+    pictures: getImageArray(),
+    offers : getOptionArray(newType.name),
+    basePrice: getRandomInt(20, 2000),
+    dateFrom: dateAndDuration[0],
+    dateTo: dateAndDuration[1],
+    tripDuration: dateAndDuration[2],
+    isFavorite: Math.random() >= 0.7,
+    type: newType,
     id: nanoid()
   };
 };
