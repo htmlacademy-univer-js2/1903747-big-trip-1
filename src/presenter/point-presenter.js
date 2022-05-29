@@ -66,7 +66,7 @@ export class PointPresenter {
     }
 
     #replacePointToForm = () => {
-      this.#tripListElement.replaceChild(this.#pointEditComponent.element, this.#pointComponent.element);
+      replace(this.#pointEditComponent.element, this.#pointComponent.element);
       this.#changeMode();
       this.#mode = Mode.EDITING;
     };
@@ -102,13 +102,13 @@ export class PointPresenter {
         document.addEventListener('keydown', this.#onEscKeyDown);
       });
 
-      this.#pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      this.#pointEditComponent.setEditClickHandler(() => {
         this.#replaceFormToPoint();
       });
     }
 
     #setFavoriteClick = () => {
-      this.#pointObject.point.isFavorite = !this.#pointObject.point.isFavorite;
+      this.#pointObject.isFavorite = !this.#pointObject.isFavorite;
       this.#changeData(this.#pointObject);
     }
 }
