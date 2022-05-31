@@ -1,7 +1,9 @@
-import dayjs from 'dayjs';
-import {upCaseFirst} from '../utilities/common.js';
+import {upCaseFirst, humanizeDateInput} from '../utilities/common.js';
 import Smart from './smart-view.js';
 import {eventTypes, allOffers, townArray} from '../mock/mock.js';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import flatpickr from 'flatpickr';
 
 const createEditEventOfferTemplate = (pointOffer, offersOfTrip) => {
   const price = pointOffer.price;
@@ -81,10 +83,10 @@ const createEventFormTemplate = (newPoint) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDateInput(dateFrom)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDateInput(dateTo)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -136,6 +138,8 @@ const createNewEventFormTemplate = (newPoint) => `<div><form class="trip-events_
 
 export class SiteEditPointView extends Smart {
   #newPoint = null;
+  #datepickerStart = null;
+  #datepickerFinish = null;
 
   constructor(newPoint) {
     super();
@@ -152,6 +156,52 @@ export class SiteEditPointView extends Smart {
     } else {
       return createEditEventFormTemplate(this._data);
     }
+  }
+
+  #setDatepicker = () => {
+    if (this.#datepickerStart) {
+      this.#datepickerStart.destroy();
+      this.#datepickerStart = null;
+    }
+
+    if (this.#datepickerFinish) {
+      this.#datepickerFinish.destroy();
+      this.#datepickerFinish = null;
+    }
+
+    this.#datepickerStart = flatpickr(
+      this.getElement().querySelector('input[name = event-start-time]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+          time_24hr: true,  // eslint-disable-line
+        defaultDate: this._data.dateFrom,
+        onChange: this.#startDateChangeHandler // На событие flatpickr передаём наш колбэк
+      }
+    );
+
+    this.#datepickerFinish = flatpickr(
+      this.getElement().querySelector('input[name = event-end-time]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        time_24hr: true,  // eslint-disable-line
+        defaultDate: this._data.dateTo,
+        onChange: this.#finishDateChangeHandler // На событие flatpickr передаём наш колбэк
+      }
+    );
+  }
+
+  #startDateChangeHandler = ([userStartDate]) => {
+    this.updateData({
+      dateFrom: userStartDate
+    });
+  }
+
+  #finishDateChangeHandler = ([userFinishDate]) => {
+    this.updateData({
+      dateTo: userFinishDate
+    });
   }
 
   _formSubmitHandler(evt) {
@@ -238,6 +288,7 @@ export class SiteEditPointView extends Smart {
   #setInnerHandlers = () => {
     Array.from(this.getElement().querySelectorAll('input[name="event-type"]'))
       .forEach((it) => it.addEventListener('click', this.#eventTypeToggleHandler));
+    this.#setDatepicker();
 
     /*this.element()
       .querySelector(`input[name=event-destination]`)
