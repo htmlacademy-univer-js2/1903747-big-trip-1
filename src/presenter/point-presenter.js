@@ -1,6 +1,8 @@
 import {SitePointView} from '../view/site-point-view.js';
 import {SiteEditPointView} from '../view/site-edit-point-view.js';
 import {render, RenderPosition, replace, remove} from '../render.js';
+import {UserAction, UpdateType} from '../const.js';
+import {isDatesEqual} from '../utilities/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -38,6 +40,8 @@ export class PointPresenter {
 
       this.#setEditClick();
       this.#pointComponent.setFavoriteClickHandler(this.#setFavoriteClick);
+      this.#pointEditComponent.setFormSubmitHandler(this.#setSubmitClick);
+      this.#pointEditComponent.setDeleteClickHandler(this.#setDeleteClick);
 
       if (prevPointComponent === null || prevPointEditComponent === null) {
         render(this.#tripListElement, this.#pointComponent.element, RenderPosition.BEFOREEND);
@@ -78,7 +82,7 @@ export class PointPresenter {
     }
 
     #replaceFormToPoint = () => {
-      this.#tripListElement.replaceChild(this.#pointComponent.element, this.#pointEditComponent.element);
+      replace(this.#pointComponent.element, this.#pointEditComponent.element);
       this.#mode = Mode.DEFAULT;
     };
 
@@ -92,23 +96,50 @@ export class PointPresenter {
 
     #setEditClick = () => {
       this.#pointComponent.setEditClickHandler(() => {
+        this.#changeData(
+          this.#pointObject
+        );
         this.#replacePointToForm();
         document.addEventListener('keydown', this.#onEscKeyDown);
       });
 
-
-      this.#pointEditComponent.setFormSubmitHandler(() => {
-        this.#replaceFormToPoint();
-        document.addEventListener('keydown', this.#onEscKeyDown);
-      });
-
       this.#pointEditComponent.setEditClickHandler(() => {
+        this.#changeData(
+          this.#pointObject
+        );
         this.#replaceFormToPoint();
       });
     }
 
+    #setSubmitClick = (update) => {
+      const isMinorUpdate =
+      !isDatesEqual(this.#pointObject.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#pointObject.dateTo, update.dateTo) ||
+      (this.#pointObject.basePrice !== update.basePrice);
+
+      this.#changeData(
+        UserAction.UPDATE_POINT,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update
+      );
+      this.#replaceFormToPoint();
+      document.addEventListener('keydown', this.#onEscKeyDown);
+    }
+
     #setFavoriteClick = () => {
       this.#pointObject.isFavorite = !this.#pointObject.isFavorite;
-      this.#changeData(this.#pointObject);
+      this.#changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.PATCH,
+        {...this.#pointObject},
+      );
+    }
+
+    #setDeleteClick = (point) => {
+      this.#changeData(
+        UserAction.DELETE_POINT,
+        UpdateType.MINOR,
+        point
+      );
     }
 }

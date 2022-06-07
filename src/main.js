@@ -1,9 +1,9 @@
 import {render} from './render.js';
 import {RenderPosition} from './render.js';
 import {SiteTabView} from './view/site-tab-view.js';
-import {SiteFilterView} from './view/site-filter-view.js';
 import {TripPresenter} from './presenter/trip-presenter.js';
 import {generatePoint} from './mock/mock.js';
+import {PointsModel} from './model/point-model.js';
 // import {SiteNewPointTemplate} from './view/site-new-point-view.js';
 const pointsCount = 10;
 
@@ -12,15 +12,18 @@ for (let i = 0; i < pointsCount; i++) {
   mocksArray.push(generatePoint());
 }
 
-const tripMainElement = document.querySelector('.trip-main');
-const tripFiltersElement = document.querySelector('.trip-controls__filters');
-const tripListElement = document.querySelector('.trip-events__list');
+const pointsModel = new PointsModel();
+pointsModel.points = mocksArray;
 
-const tripPresenter = new TripPresenter(tripListElement);
+const tripMainContainer = document.querySelector('.trip-main');
+const tripFiltersContainer = document.querySelector('.trip-controls__filters');
+const tripListContainer = document.querySelector('.trip-events__list');
 
-render(tripMainElement, new SiteTabView().element, RenderPosition.AFTERBEGIN);
-render(tripFiltersElement, new SiteFilterView().element, RenderPosition.BEFOREEND);
+const tripPresenter = new TripPresenter(tripListContainer, tripFiltersContainer, tripMainContainer, pointsModel);
 
-tripPresenter.init(mocksArray);
+render(tripMainContainer, new SiteTabView().element, RenderPosition.AFTERBEGIN);
+//render(tripFiltersElement, new SiteFilterView().element, RenderPosition.BEFOREEND);
+
+tripPresenter.init();
 
 
