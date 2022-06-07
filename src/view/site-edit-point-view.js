@@ -67,19 +67,18 @@ const createEventFormTemplate = (newPoint) => {
       </div>
     </div>
 
-        <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
-            ${eventTypeName} ${type.action} 
-          </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
-                            value="${townName ? townName : ''}"
-                            
-                            list="destination-list-1" required>
-          <datalist id="destination-list-1">
-            ${townArray.map((it) => `<option value="${it}"></option>`).join('\n')}
-            <option value="anus"></option>
-          </datalist>
-        </div>
+    <div class="event__field-group  event__field-group--destination">
+    <label class="event__label  event__type-output" for="event-destination-1">
+      ${upCaseFirst(eventTypeName)} ${type.action}
+    </label>
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+        value="${townName ? townName : ''}"
+        
+        list="destination-list-1" required>
+    <datalist id="destination-list-1">
+      ${townArray.map((it) => `<option value="${it}"></option>`).join('\n')}
+    </datalist>
+  </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -94,7 +93,7 @@ const createEventFormTemplate = (newPoint) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -144,7 +143,6 @@ export class SiteEditPointView extends Smart {
   constructor(newPoint) {
     super();
     this.#newPoint = newPoint;
-    this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._data = SiteEditPointView.parsePointToData(newPoint);
     this.#setInnerHandlers();
@@ -190,6 +188,7 @@ export class SiteEditPointView extends Smart {
         onChange: this.#finishDateChangeHandler // На событие flatpickr передаём наш колбэк
       }
     );
+    this.#updateTripDuration();
   }
 
   #startDateChangeHandler = ([userStartDate]) => {
@@ -204,14 +203,24 @@ export class SiteEditPointView extends Smart {
     });
   }
 
-  _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(SiteEditPointView.updateData(this._data));
+  #updateTripDuration = () => {
+    if (this._data.dateFrom > this._data.dateTo) {
+      const temp = this._data.dateFrom;
+      this._data.dateFrom = this._data.dateTo;
+      this._data.dateTo = temp;
+    }
+    this._data.tripDuration = this._data.dateTo - this._data.dateFrom - 17999999;
   }
 
-  setFormSubmitHandler(callback) {
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this._data);
+  }
+
+  setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
-    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+    this.getElement().querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
   _editClickHandler(evt) {
@@ -224,6 +233,16 @@ export class SiteEditPointView extends Smart {
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
   }
 
+  setDeleteClickHandler (callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
+  }
+
+  _deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(this._data);
+  }
+
   #eventTypeToggleHandler = (evt) => {
     const newEventType = eventTypes.filter((it) => it.name === evt.target.value)[0];
     this.updateData({
@@ -234,8 +253,9 @@ export class SiteEditPointView extends Smart {
   }
 
   #eventOfferToggleHandler = (evt) => {
+    const allOffersOfPoint = getOptionsArray(this._data.type.name);
     let updateCheckedOffers = [];
-    const index = this._data.offers.findIndex((it) => it.title.toLowerCase().replace(/ /g, '-') === evt.target.dataset.offerName);
+    const index = this._data.offers.findIndex((it) => it.option.toLowerCase().replace(/ /g, '-') === evt.target.dataset.offerName);
     if (index >= 0) {
       updateCheckedOffers = [
         ...this._data.offers.slice(0, index),
@@ -244,7 +264,7 @@ export class SiteEditPointView extends Smart {
     } else {
       updateCheckedOffers = this._data.offers.slice();
       updateCheckedOffers.push(
-        this._offers[this._data.eventType].offers.find((it) => it.title.toLowerCase().replace(/ /g, '-') === evt.target.dataset.offerName)
+        allOffersOfPoint.find((it) => it.option.toLowerCase().replace(/ /g, '-') === evt.target.dataset.offerName)
       );
     }
     this.updateData({
@@ -254,22 +274,17 @@ export class SiteEditPointView extends Smart {
 
   #eventDestinationToggleHandler = (evt) => {
     this.updateData({
-      place: this._destinations[evt.target.value]
+      townName: evt.target.value
     });
   }
 
   #priceInputHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      price: evt.target.value
-    }, true);
-  }
-
-  #toggleFavoriteHandler = (evt) => {
-    evt.preventDefault();
-    this.updateData({
-      isFavorite: !this._data.isFavorite
-    });
+      basePrice: evt.target.value
+    },
+    true
+    );
   }
 
   static parsePointToData(point) {
@@ -283,6 +298,7 @@ export class SiteEditPointView extends Smart {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditClickHandler(this._callback.editClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   #setInnerHandlers = () => {
@@ -290,25 +306,25 @@ export class SiteEditPointView extends Smart {
       .forEach((it) => it.addEventListener('click', this.#eventTypeToggleHandler));
     this.#setDatepicker();
 
-    /*this.element()
-      .querySelector(`input[name=event-destination]`)
-      .addEventListener(`change`, this.#eventDestinationToggleHandler);
+    this.getElement()
+      .querySelector('input[name=event-destination]')
+      .addEventListener('change', this.#eventDestinationToggleHandler);
 
-    this.element()
-      .querySelector(`.event__input--price`)
-      .addEventListener(`input`, this.#priceInputHandler);
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('input', this.#priceInputHandler);
 
-    if (!this._data.newEvent) {
+    /*if (!this._data.newEvent) {
       this.element()
         .querySelector(`.event__favorite-btn`)
         .addEventListener(`click`, this.#toggleFavoriteHandler);
-    }
+    }*/
 
-    Array.from(this.getElement().querySelectorAll(`.event__offer-checkbox`))
-      .forEach((it) => it.addEventListener(`click`, this.#eventOfferToggleHandler));*/
+    Array.from(this.getElement().querySelectorAll('.event__offer-checkbox'))
+      .forEach((it) => it.addEventListener('click', this.#eventOfferToggleHandler));
   }
 
-  static updateData(data) {
+  static parseDataToEvent(data) {
     data = Object.assign({}, data);
     return data;
   }

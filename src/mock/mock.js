@@ -33,12 +33,13 @@ class optionObject {
   }
 }
 
+
 export const allOffers = [
   new optionObject('Add breakfast', 50, 'restaurant').tripOffer,
   new optionObject('Add alchol', 50, 'restaurant').tripOffer,
   new optionObject('Add luggage', 50, 'flight').tripOffer,
   new optionObject('Rent a car', 80, 'drive').tripOffer,
-  new optionObject('Add soft drinks', 10, 'bus').tripOffer,
+  new optionObject('Add soft drinks', 15, 'bus').tripOffer,
   new optionObject('Book tickets', 40, 'sightseeing').tripOffer,
   new optionObject('Lunch in city', 30, 'sightseeing').tripOffer,
   new optionObject('Order Uber', 20, 'taxi').tripOffer,
@@ -47,6 +48,7 @@ export const allOffers = [
   new optionObject('Switch to luxe', 100, 'ship').tripOffer,
   new optionObject('Premium waiting area', 20, 'check-in').tripOffer,
   new optionObject('Switch to luxe', 50, 'transport').tripOffer,
+  new optionObject('Add conditioner', 10, 'bus').tripOffer
 ];
 
 const descriptionArray = [
@@ -102,17 +104,17 @@ const getWeight = (dateA, dateB) => {
 };
 
 export const sortPointTime = (pointA, pointB) => {
-  const durationA = pointA.point.tripDuration;
-  const durationB = pointB.point.tripDuration;
+  const durationA = pointA.tripDuration;
+  const durationB = pointB.tripDuration;
 
   const weight = getWeight(durationA, durationB);
   return weight ?? durationB - durationA;
 };
 
 export const sortPointPrice = (pointA, pointB) => {
-  const weight = getWeight(pointA.point.basePrice, pointB.point.basePrice);
+  const weight = getWeight(pointA.basePrice, pointB.basePrice);
 
-  return weight ?? pointB.point.basePrice - pointA.point.basePrice;
+  return weight ?? pointB.basePrice - pointA.basePrice;
 };
 
 export const generatePoint = () => {
@@ -129,6 +131,24 @@ export const generatePoint = () => {
     tripDuration: dateAndDuration[2],
     isFavorite: Math.random() >= 0.7,
     type: newType,
+    id: nanoid()
+  };
+};
+
+export const generateClearPoint = () => {
+  const dateFrom = new Date();
+  const dateTo = new Date(new Date(dateFrom).setHours(dateFrom.getHours() + 6));
+  return {
+    description: descriptionArray[getRandomInt(0, 4)],
+    townName: 'Crimea',
+    pictures: getImageArray(),
+    offers : [],
+    basePrice: 50,
+    dateFrom: dateFrom,
+    dateTo: dateTo,
+    tripDuration: dateTo - dateFrom,
+    isFavorite: false,
+    type: eventTypes[0],
     id: nanoid()
   };
 };
