@@ -238,6 +238,7 @@ main {
 .trip-tabs {
   display: -ms-flexbox;
   display: flex;
+  margin-top: 10px;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
   -ms-flex-align: start;
