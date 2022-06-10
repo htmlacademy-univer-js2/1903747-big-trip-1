@@ -6,9 +6,11 @@ import {generateClearPoint} from '../mock/mock.js';
 export class EventNew {
     #changeData = null;
     #eventEditComponent = null;
+    #eventListContainer = null;
     #setActiveButton = null;
 
     constructor(eventListContainer, changeData, setActiveButton) {
+      this.#eventListContainer = eventListContainer;
       this.#changeData = changeData;
       this.#setActiveButton = setActiveButton;
       this.#eventEditComponent = null;

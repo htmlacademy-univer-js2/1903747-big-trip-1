@@ -28,3 +28,10 @@ export const filter = {
   [FilterType.FUTURE]: (events) => events.filter((task) => task.dateTo > new Date()),
   [FilterType.PAST]: (events) => events.filter((task) => task.dateTo < new Date())
 };
+
+export const humanizeDuration = (duration) => {
+  const spreadDay = Math.floor(duration / (24*60*60*1000));
+  const spreadHours = Math.floor(duration/ (60*60*1000));
+  const spreadMinutes = Math.floor(duration / (60*1000));
+  return `${spreadDay > 0 ? `${spreadDay}D ` : ''}${spreadHours > 0 ? `${spreadHours}H ` : ''}${spreadMinutes > 0 ? `${spreadMinutes}M ` : ''}`;
+};
