@@ -87,7 +87,7 @@ const generateTime = () => {
   return [startTime, endTime, duration];
 };
 
-const getWeight = (dateA, dateB) => {
+export const getWeight = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
   }
@@ -141,7 +141,7 @@ export const generateClearPoint = () => {
   return {
     description: descriptionArray[getRandomInt(0, 4)],
     townName: 'Crimea',
-    pictures: getImageArray(),
+    pictures: [{src: '', description : ''}],
     offers : [],
     basePrice: 50,
     dateFrom: dateFrom,

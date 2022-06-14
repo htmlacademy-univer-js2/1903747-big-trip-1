@@ -28,8 +28,8 @@ const renderMoneyChart = (moneyCtx, items) => {
       labels: data.labels,
       datasets: [{
         data: data.data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
+        backgroundColor: '#dff4d8',
+        hoverBackgroundColor: '#cccccc',
         anchor: 'start',
         barThickness: 44,
         minBarLength: 50,
@@ -99,8 +99,8 @@ const renderTransportChart = (transportCtx, items) => {
       labels: data.labels,
       datasets: [{
         data: data.data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
+        backgroundColor: '#dee6f6',
+        hoverBackgroundColor: '#сссссс',
         anchor: 'start'
       }]
     },
@@ -169,8 +169,8 @@ const renderTimeSpendChart = (timeSpendCtx, items) => {
       labels: data.labels,
       datasets: [{
         data: data.data,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
+        backgroundColor: '#f5ebd7',
+        hoverBackgroundColor: '#сссссс',
         anchor: 'start'
       }]
     },

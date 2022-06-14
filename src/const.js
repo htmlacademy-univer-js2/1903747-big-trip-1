@@ -10,10 +10,16 @@ export const UserAction = {
   DELETE_POINT: 'DELETE_POINT'
 };
 
+export const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT'
 };
 
 export const FilterType = {
