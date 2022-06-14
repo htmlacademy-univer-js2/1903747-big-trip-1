@@ -1,18 +1,14 @@
 import {SitePointView} from '../view/site-point-view.js';
 import {SiteEditPointView} from '../view/site-edit-point-view.js';
 import {render, RenderPosition, replace, remove} from '../render.js';
-import {UserAction, UpdateType} from '../const.js';
+import {UserAction, UpdateType, Mode} from '../const.js';
 import {isDatesEqual} from '../utilities/common.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export class PointPresenter {
     #tripListElement = null;
 
     #pointObject = null;
+    #allOffers = null;
     #pointComponent = null;
     #pointEditComponent = null;
     #pointId = null;
@@ -28,15 +24,14 @@ export class PointPresenter {
       this.#changeMode = changeMode;
     }
 
-    init = (pointObject) => {
+    init = (pointObject, allOffers, destinations) => {
       this.#pointObject = pointObject;
+      this.#allOffers = allOffers;
       this.#pointId = pointObject.id;
-
       const prevPointComponent = this.#pointComponent;
       const prevPointEditComponent = this.#pointEditComponent;
-
       this.#pointComponent = new SitePointView(this.#pointObject);
-      this.#pointEditComponent = new SiteEditPointView(this.#pointObject);
+      this.#pointEditComponent = new SiteEditPointView(this.#pointObject, allOffers, destinations);
 
       this.#setEditClick();
       this.#pointComponent.setFavoriteClickHandler(this.#setFavoriteClick);
@@ -64,6 +59,10 @@ export class PointPresenter {
       return this.#pointId;
     }
 
+    get mode() {
+      return this.#mode;
+    }
+
     destroy = () => {
       remove(this.#pointComponent);
       remove(this.#pointEditComponent);
@@ -77,11 +76,11 @@ export class PointPresenter {
 
     resetView = () => {
       if (this.#mode !== Mode.DEFAULT) {
-        this.#replaceFormToPoint();
+        this.replaceFormToPoint();
       }
     }
 
-    #replaceFormToPoint = () => {
+    replaceFormToPoint = () => {
       replace(this.#pointComponent.element, this.#pointEditComponent.element);
       this.#mode = Mode.DEFAULT;
     };
@@ -89,7 +88,7 @@ export class PointPresenter {
     #onEscKeyDown = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         event.preventDefault();
-        this.#replaceFormToPoint();
+        this.replaceFormToPoint();
         document.removeEventListener('keydown', this.#onEscKeyDown);
       }
     };
@@ -107,7 +106,7 @@ export class PointPresenter {
         this.#changeData(
           this.#pointObject
         );
-        this.#replaceFormToPoint();
+        this.replaceFormToPoint();
       });
     }
 
@@ -115,6 +114,7 @@ export class PointPresenter {
       const isMinorUpdate =
       !isDatesEqual(this.#pointObject.dateFrom, update.dateFrom) ||
       !isDatesEqual(this.#pointObject.dateTo, update.dateTo) ||
+      (this.#pointObject.townName !== update.townName) ||
       (this.#pointObject.basePrice !== update.basePrice);
 
       this.#changeData(
@@ -122,7 +122,7 @@ export class PointPresenter {
         isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         update
       );
-      this.#replaceFormToPoint();
+      this.replaceFormToPoint();
       document.addEventListener('keydown', this.#onEscKeyDown);
     }
 

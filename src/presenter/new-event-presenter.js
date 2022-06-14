@@ -1,7 +1,25 @@
 import {SiteEditPointView} from '../view/site-edit-point-view.js';
 import {remove} from '../render.js';
 import {UserAction, UpdateType} from '../const.js';
-import {generateClearPoint} from '../mock/mock.js';
+import { nanoid } from 'nanoid';
+
+const generateClearPoint = (destination, offer) => {
+  const dateFrom = new Date();
+  const dateTo = new Date(new Date(dateFrom).setHours(dateFrom.getHours() + 6));
+  return {
+    description: destination.description,
+    townName: destination.name,
+    pictures: destination.pictures,
+    offers : offer.offers,
+    basePrice: 50,
+    dateFrom: dateFrom,
+    dateTo: dateTo,
+    tripDuration: dateTo - dateFrom,
+    isFavorite: false,
+    type: {name: offer.type, iconURL: 'img/icons/taxi.png', action: 'to'},
+    id: nanoid()
+  };
+};
 
 export class EventNew {
     #changeData = null;
@@ -16,12 +34,11 @@ export class EventNew {
       this.#eventEditComponent = null;
     }
 
-    init() {
+    init(allOffers, destinations) {
       if (this.#eventEditComponent !== null) {
         return;
       }
-
-      this.#eventEditComponent = new SiteEditPointView(generateClearPoint());
+      this.#eventEditComponent = new SiteEditPointView(generateClearPoint(destinations[0], allOffers[0]), allOffers, destinations);
       this.#eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
       this.#eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
       this.#eventEditComponent.setEditClickHandler(this._handleDeleteClick);
@@ -49,7 +66,7 @@ export class EventNew {
       });
     }
 
-    setAborting() {
+    /*setAborting() {
       const resetFormState = () => {
         this.#eventEditComponent.updateData({
           isDisabled: false,
@@ -59,7 +76,7 @@ export class EventNew {
       };
 
       this.#eventEditComponent.shake(resetFormState);
-    }
+    }*/
 
   _handleFormSubmit = (tripPoint) => {
     this.#changeData(
