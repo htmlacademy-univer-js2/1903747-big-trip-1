@@ -4,7 +4,7 @@ import {SiteSortView} from '../view/site-list-sort-view.js';
 import {Filter} from '../view/site-filter-view.js';
 import {filter} from '../utilities/common.js';
 import {SiteNoPointView} from '../view/site-no-point-view.js';
-import {PointPresenter} from './point-presenter.js';
+import {PointPresenter, State} from './point-presenter.js';
 import {EventNew} from './new-event-presenter.js';
 import {FilterType, SortType, UserAction, UpdateType, Mode} from '../const.js';
 import {sortPointTime, sortPointPrice} from '../mock/mock.js';
@@ -96,14 +96,16 @@ export class TripPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch(actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setViewState(State.SAVING);
+        this.#pointsModel.updatePoint(updateType, update, this.#pointPresenters.get(update.id).setViewState);
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#eventNewPresenter.setSaving();
+        this.#pointsModel.addPoint(updateType, update, this.#eventNewPresenter.setAborting);
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
-        break;
+        this.#pointPresenters.get(update.id).setViewState(State.DELETING);
+        this.#pointsModel.deletePoint(updateType, update, this.#pointPresenters.get(update.id).setViewState);
     }
   }
 
