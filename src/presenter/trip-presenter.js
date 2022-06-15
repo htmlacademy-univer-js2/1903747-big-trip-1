@@ -20,6 +20,7 @@ export class TripPresenter {
   #loadingComponent = null;
   #pointsModel = null;
   #filterType = null;
+  #filters = null;
   #filtersComponent = null;
   #tripListContainer = null;
   #tripControlsContainer = null;
@@ -58,11 +59,10 @@ export class TripPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#sortComponent = new SiteSortView();
     this.#newPointButton = new NewPointButton();
-    this.#filtersComponent = new Filter('everything');
+
+    this.#filtersComponent = new Filter(FilterType.EVERYTHING);
     this.#newPointButton.setNewEventButtonHandler(this._buttonHandler);
     render(this.#tripControlsContainer, this.#newPointButton.element, RenderPosition.AFTEREND);
-    render(this.#tripControlsContainer, this.#filtersComponent.element, RenderPosition.BEFOREEND);
-    this.#filtersComponent.setFilterTypeChangeHandler(this.#handlerFilterTypeChange);
     this.#renderBoard();
   }
 
@@ -82,6 +82,12 @@ export class TripPresenter {
     this.#filterType = filterType;
     this.#handleModelEvent('MAJOR');
   }
+
+  #getAllFilters = () => ({
+    everything : filter[FilterType.EVERYTHING](this.#pointsModel.points),
+    past : filter[FilterType.PAST](this.#pointsModel.points),
+    future : filter[FilterType.FUTURE](this.#pointsModel.points)
+  })
 
   #handleSortTypeChange = (sortType) => {
     if (this.#sortType === sortType) {
@@ -160,6 +166,11 @@ export class TripPresenter {
     this.#renderSort();
 
     this.#renderPointsList();
+
+    this.#filtersComponent.init(this.#getAllFilters(), this.#filterType);
+    this.#filtersComponent.setFilterTypeChangeHandler(this.#handlerFilterTypeChange);
+    render(this.#tripControlsContainer, this.#filtersComponent.element, RenderPosition.BEFOREEND);
+
     this.#siteTabComponent = new SiteTabView(this.#totalPrice, this.#pointsModel.points);
     render(this.#tripMainContainer, this.#siteTabComponent.element, RenderPosition.AFTERBEGIN);
   }
@@ -191,6 +202,7 @@ export class TripPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters = new Map();
     remove(this.#siteTabComponent);
+    remove(this.#filtersComponent);
 
     if (resetSortType) {
       this.#sortType = SortType.DEFAULT;
@@ -211,3 +223,4 @@ export class TripPresenter {
     this.#newPointButton.removeDisable();
   }
 }
+//someChange
