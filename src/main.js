@@ -37,7 +37,6 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-//render(tripFiltersElement, new SiteFilterView().element, RenderPosition.BEFOREEND);
 tripPresenter.init();
 pointsModel.init().finally(() => {
   render(tripControlsContainer, menuComponent.element, RenderPosition.AFTERBEGIN);
