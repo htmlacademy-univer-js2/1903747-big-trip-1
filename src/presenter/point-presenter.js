@@ -4,6 +4,12 @@ import {render, RenderPosition, replace, remove} from '../render.js';
 import {UserAction, UpdateType, Mode} from '../const.js';
 import {isDatesEqual} from '../utilities/common.js';
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING'
+};
+
 export class PointPresenter {
     #tripListElement = null;
 
@@ -33,6 +39,7 @@ export class PointPresenter {
       this.#pointComponent = new SitePointView(this.#pointObject);
       this.#pointEditComponent = new SiteEditPointView(this.#pointObject, allOffers, destinations);
 
+      this.replaceFormToPoint();
       this.#setEditClick();
       this.#pointComponent.setFavoriteClickHandler(this.#setFavoriteClick);
       this.#pointEditComponent.setFormSubmitHandler(this.#setSubmitClick);
@@ -119,11 +126,49 @@ export class PointPresenter {
 
       this.#changeData(
         UserAction.UPDATE_POINT,
-        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.MINOR,
         update
       );
-      this.replaceFormToPoint();
       document.addEventListener('keydown', this.#onEscKeyDown);
+    }
+
+    setViewState = (state) => {
+      if (this.#mode === Mode.DEFAULT) {
+        return;
+      }
+
+      const resetFormState = () => {
+        this.#pointEditComponent.updateData({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        });
+      };
+
+      switch (state) {
+        case State.SAVING:
+          this.#pointEditComponent.updateData({
+            isDisabled: true,
+            isSaving: true
+          });
+          break;
+        case State.DELETING:
+          this.#pointEditComponent.updateData({
+            isDisabled: true,
+            isDeleting: true
+          });
+          break;
+        case State.EDITING:
+          this.#pointEditComponent.updateData({
+            isDisabled: true,
+            isDeleting: true
+          });
+          break;
+        case State.ABORTING:
+          this.#pointComponent.shake(resetFormState);
+          this.#pointEditComponent.shake(resetFormState);
+          break;
+      }
     }
 
     #setFavoriteClick = () => {

@@ -66,7 +66,7 @@ export class EventNew {
       });
     }
 
-    /*setAborting() {
+    setAborting = () => {
       const resetFormState = () => {
         this.#eventEditComponent.updateData({
           isDisabled: false,
@@ -76,7 +76,7 @@ export class EventNew {
       };
 
       this.#eventEditComponent.shake(resetFormState);
-    }*/
+    }
 
   _handleFormSubmit = (tripPoint) => {
     this.#changeData(
